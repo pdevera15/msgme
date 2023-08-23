@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ccy.msgme.document.MessageDocument;
@@ -15,6 +16,7 @@ public class MessageServiceImpl implements MessageService {
     
     private final MessageRepository messageRepository;
     
+    @Autowired
     public MessageServiceImpl(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
     }

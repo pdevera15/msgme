@@ -1,15 +1,11 @@
 package com.ccy.msgme.document;
 
-import java.io.Serializable;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("message")
-public class MessageDocument implements Serializable {
+public class MessageDocument {
     
-    private static final long serialVersionUID = 1L;
-
     @Id
     private String id;
     

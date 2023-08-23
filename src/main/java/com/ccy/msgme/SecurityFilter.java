@@ -16,7 +16,7 @@ public class SecurityFilter implements Filter{
 
     @Override
     public void init(FilterConfig filterConfig) {
-        System.out.println("FILTER INITIALISATION!!!");
+        System.out.println("Filter Init");
     }
     
     @Override
