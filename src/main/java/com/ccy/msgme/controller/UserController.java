@@ -3,12 +3,14 @@ package com.ccy.msgme.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccy.msgme.request.UserRequest;
+import com.ccy.msgme.response.BaseResponse;
 import com.ccy.msgme.service.UserService;
 
 @RestController
@@ -23,7 +25,7 @@ public class UserController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<BaseResponse<?>> login(@RequestBody UserRequest userRequest) {
         return userService.login(userRequest);
     }
     
@@ -34,6 +36,11 @@ public class UserController {
     
     @GetMapping("/generatelink")
     public void generateLink() {
+        
+    }
+    
+    @GetMapping("/messageboard/{username}")
+    public void getMessageBoard(@PathVariable String username) {
         
     }
 }

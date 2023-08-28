@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.ccy.msgme.document.UserDocument;
 import com.ccy.msgme.repository.UserRepository;
 import com.ccy.msgme.request.UserRequest;
+import com.ccy.msgme.response.BaseResponse;
 import com.ccy.msgme.response.ErrorResponse;
+import com.ccy.msgme.response.LoginResponse;
 import com.ccy.msgme.util.ApiError;
 
 @Service
@@ -27,16 +29,27 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public ResponseEntity<?> login(UserRequest userRequest) {
+    public ResponseEntity<BaseResponse<?>> login(UserRequest userRequest) {
         Optional<UserDocument> user = userRepository.findByUsername(userRequest.getUsername());
+        
         if (user.isPresent() &&
                 passwordEncoder.matches(userRequest.getPassword(), user.get().getPassword())) {
-            return ResponseEntity.status(200).build();
+            LoginResponse response = new LoginResponse(user.get().getId(), user.get().getUsername());
+            BaseResponse<LoginResponse> baseResponse = new BaseResponse<>();
+            baseResponse.setData(response);
+            baseResponse.setStatus("success");
+            baseResponse.setMessage("successfully login");
+            return ResponseEntity.status(200).body(baseResponse);
         }
-        
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorCode(ApiError.INVALID_CREDENTIALS.getCode());
+        response.setMessage(ApiError.INVALID_CREDENTIALS.getMessage());
+        BaseResponse<ErrorResponse> baseResponse = new BaseResponse<>();
+        baseResponse.setStatus("failed");
+        baseResponse.setMessage("Credentials Failed");
+        baseResponse.setData(response);
         return ResponseEntity.status(401)
-                .body(new ErrorResponse(ApiError.INVALID_CREDENTIALS.getCode(),
-                ApiError.INVALID_CREDENTIALS.getMessage()));
+                .body(baseResponse);
     }
 
     @Override
