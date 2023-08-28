@@ -1,28 +1,29 @@
 package com.ccy.msgme.document;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document("user")
 public class UserDocument {
     
-    @MongoId
+    @Id
     private String id;
 
     private String username;
     
     private String password;
     
-    private String timeCreated;
+    private long timeCreated;
     
-    private String timeUpdated;
+    private long timeUpdated;
     
     private String nickname;
 
     public UserDocument() {
     }
     
-    public UserDocument(String id, String username, String password, String timeCreated, String timeUpdated,
+    public UserDocument(String id, String username, String password, long timeCreated, long timeUpdated,
             String nickname) {
         super();
         this.id = id;
@@ -57,19 +58,19 @@ public class UserDocument {
         this.password = password;
     }
 
-    public String getTimeCreated() {
+    public long getTimeCreated() {
         return timeCreated;
     }
 
-    public void setTimeCreated(String timeCreated) {
+    public void setTimeCreated(long timeCreated) {
         this.timeCreated = timeCreated;
     }
 
-    public String getTimeUpdated() {
+    public long getTimeUpdated() {
         return timeUpdated;
     }
 
-    public void setTimeUpdated(String timeUpdated) {
+    public void setTimeUpdated(long timeUpdated) {
         this.timeUpdated = timeUpdated;
     }
 

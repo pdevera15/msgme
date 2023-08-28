@@ -1,6 +1,10 @@
 package com.ccy.msgme.service;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ccy.msgme.document.UserDocument;
@@ -14,32 +18,46 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     
-    public UserServiceImpl(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     
     @Override
     public ResponseEntity<?> login(UserRequest userRequest) {
-        // find username if available
-        UserDocument userDocument = new UserDocument();
-        userDocument.setUsername(userRequest.getUsername());
-        
-        if (userRepository.existsByUsername(userDocument.getUsername())) {
-            return ResponseEntity.status(409)
-                    .body(new ErrorResponse(String.valueOf(ApiError.USERNAME_ALREADY_EXISTS.getCode()), 
-                            ApiError.USERNAME_ALREADY_EXISTS.getMessage()));
+        Optional<UserDocument> user = userRepository.findByUsername(userRequest.getUsername());
+        if (user.isPresent() &&
+                passwordEncoder.matches(userRequest.getPassword(), user.get().getPassword())) {
+            return ResponseEntity.status(200).build();
         }
-        return ResponseEntity.status(200).build();
-        // generate hash password
         
-        // 
-        
+        return ResponseEntity.status(401)
+                .body(new ErrorResponse(ApiError.INVALID_CREDENTIALS.getCode(),
+                ApiError.INVALID_CREDENTIALS.getMessage()));
     }
 
     @Override
-    public void register() {
-        // TODO Auto-generated method stub
+    public ResponseEntity<?> register(UserRequest userRequest) {
+        // check if username available
+        Optional<UserDocument> user = userRepository.findByUsername(userRequest.getUsername());
+        if (user.isPresent()) {
+            return ResponseEntity.status(409)
+                    .body(new ErrorResponse(ApiError.USERNAME_ALREADY_EXISTS.getCode(), 
+                            ApiError.USERNAME_ALREADY_EXISTS.getMessage()));
+        }
+
+        UserDocument userDocument = new UserDocument();
+        userDocument.setUsername(userRequest.getUsername());
+        userDocument.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        userDocument.setTimeCreated(System.currentTimeMillis());
+        userDocument.setTimeUpdated(System.currentTimeMillis());
         
+        userRepository.save(userDocument);
+        
+        return ResponseEntity.status(200).build();
     }
 
     @Override

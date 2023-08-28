@@ -7,7 +7,7 @@ import com.ccy.msgme.request.UserRequest;
 public interface UserService {
     public ResponseEntity<?> login(UserRequest userRequest);
     
-    public void register();
+    public ResponseEntity<?> register(UserRequest userRequest);
     
     public void generateLink();
 }

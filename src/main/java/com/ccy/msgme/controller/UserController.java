@@ -1,7 +1,5 @@
 package com.ccy.msgme.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +14,6 @@ import com.ccy.msgme.service.UserService;
 @RestController
 @RequestMapping("v1/user")
 public class UserController {
-
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
     
     private final UserService userService;
     
@@ -28,13 +24,12 @@ public class UserController {
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequest userRequest) {
-        ResponseEntity<?> response = userService.login(userRequest);
-        return response;
+        return userService.login(userRequest);
     }
     
     @PostMapping("/register")
-    public void register(@RequestBody UserRequest userRequest) {
-        
+    public ResponseEntity<?> register(@RequestBody UserRequest userRequest) {
+        return userService.register(userRequest);
     }
     
     @GetMapping("/generatelink")
