@@ -12,7 +12,7 @@ import com.ccy.msgme.repository.UserRepository;
 import com.ccy.msgme.request.UserRequest;
 import com.ccy.msgme.response.BaseResponse;
 import com.ccy.msgme.response.ErrorResponse;
-import com.ccy.msgme.response.LoginResponse;
+import com.ccy.msgme.response.UserResponse;
 import com.ccy.msgme.util.ApiError;
 
 @Service
@@ -34,32 +34,41 @@ public class UserServiceImpl implements UserService {
         
         if (user.isPresent() &&
                 passwordEncoder.matches(userRequest.getPassword(), user.get().getPassword())) {
-            LoginResponse response = new LoginResponse(user.get().getId(), user.get().getUsername());
-            BaseResponse<LoginResponse> baseResponse = new BaseResponse<>();
+            UserResponse response = new UserResponse(user.get().getId(), user.get().getUsername());
+            BaseResponse<UserResponse> baseResponse = new BaseResponse<>();
             baseResponse.setData(response);
             baseResponse.setStatus("success");
             baseResponse.setMessage("successfully login");
             return ResponseEntity.status(200).body(baseResponse);
         }
+        
         ErrorResponse response = new ErrorResponse();
         response.setErrorCode(ApiError.INVALID_CREDENTIALS.getCode());
         response.setMessage(ApiError.INVALID_CREDENTIALS.getMessage());
         BaseResponse<ErrorResponse> baseResponse = new BaseResponse<>();
         baseResponse.setStatus("failed");
-        baseResponse.setMessage("Credentials Failed");
+        baseResponse.setMessage("credentials not valid");
         baseResponse.setData(response);
-        return ResponseEntity.status(401)
+        return ResponseEntity.status(200)
                 .body(baseResponse);
+        
     }
 
     @Override
-    public ResponseEntity<?> register(UserRequest userRequest) {
+    public ResponseEntity<BaseResponse<?>> register(UserRequest userRequest) {
         // check if username available
         Optional<UserDocument> user = userRepository.findByUsername(userRequest.getUsername());
         if (user.isPresent()) {
-            return ResponseEntity.status(409)
-                    .body(new ErrorResponse(ApiError.USERNAME_ALREADY_EXISTS.getCode(), 
-                            ApiError.USERNAME_ALREADY_EXISTS.getMessage()));
+            ErrorResponse response = new ErrorResponse();
+            response.setErrorCode(ApiError.USERNAME_ALREADY_EXISTS.getCode());
+            response.setMessage(ApiError.USERNAME_ALREADY_EXISTS.getMessage());
+            
+            BaseResponse<ErrorResponse> baseResponse = new BaseResponse<>();
+            baseResponse.setStatus("failed");
+            baseResponse.setMessage("username already exist");
+            baseResponse.setData(response);
+            
+            return ResponseEntity.status(200).body(baseResponse);
         }
 
         UserDocument userDocument = new UserDocument();
@@ -67,15 +76,41 @@ public class UserServiceImpl implements UserService {
         userDocument.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         userDocument.setTimeCreated(System.currentTimeMillis());
         userDocument.setTimeUpdated(System.currentTimeMillis());
-        
         userRepository.save(userDocument);
         
-        return ResponseEntity.status(200).build();
+        BaseResponse<ErrorResponse> baseResponse = new BaseResponse<>();
+        baseResponse.setStatus("success");
+        baseResponse.setMessage("registration success");
+
+        return ResponseEntity.status(200).body(baseResponse);
     }
 
     @Override
-    public void generateLink() {
-        // TODO Auto-generated method stub
+    public ResponseEntity<BaseResponse<?>> checkUser(String username) {
+        Optional<UserDocument> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            UserResponse response = new UserResponse();
+            response.setId(user.get().getId());
+            response.setUsername(user.get().getUsername());
+            
+            BaseResponse<UserResponse> baseResponse = new BaseResponse<>();
+            baseResponse.setStatus("success");
+            baseResponse.setMessage("user exist");
+            baseResponse.setData(response);
+            
+            return ResponseEntity.status(200).body(baseResponse);
+        }
+        
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorCode(ApiError.INVALID_CREDENTIALS.getCode());
+        response.setMessage(ApiError.INVALID_CREDENTIALS.getMessage());
+        
+        BaseResponse<ErrorResponse> baseResponse = new BaseResponse<>();
+        baseResponse.setStatus("failed");
+        baseResponse.setMessage("user doesn't exist");
+        baseResponse.setData(response);
+        return ResponseEntity.status(200)
+                .body(baseResponse);
         
     }
 

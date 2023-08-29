@@ -34,13 +34,8 @@ public class UserController {
         return userService.register(userRequest);
     }
     
-    @GetMapping("/generatelink")
-    public void generateLink() {
-        
-    }
-    
     @GetMapping("/messageboard/{username}")
-    public void getMessageBoard(@PathVariable String username) {
-        
+    public ResponseEntity<BaseResponse<?>> checkUserExistence(@PathVariable String username) {
+        return userService.checkUser(username);
     }
 }

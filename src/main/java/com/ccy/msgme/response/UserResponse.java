@@ -1,14 +1,14 @@
 package com.ccy.msgme.response;
 
-public class LoginResponse {
+public class UserResponse {
 
     private String id;
     
     private String username;
     
-    public LoginResponse() {}
+    public UserResponse() {}
     
-    public LoginResponse(String id, String username) {
+    public UserResponse(String id, String username) {
         this.id = id;
         this.username = username;
     }
