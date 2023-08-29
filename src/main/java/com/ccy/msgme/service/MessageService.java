@@ -1,15 +1,11 @@
 package com.ccy.msgme.service;
 
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-import com.ccy.msgme.document.MessageDocument;
+import com.ccy.msgme.response.BaseResponse;
 
 public interface MessageService {
-    MessageDocument getMessage(String id);
+    ResponseEntity<BaseResponse<?>> getAllMessageByUserId(String userId);
     
-    List<MessageDocument> getAllMessageByUserId(String userId);
-    
-    boolean addMessage(MessageDocument messageDocument);
-    
-    boolean deleteMessage(String id);
+    ResponseEntity<BaseResponse<?>> deleteMessage(String id);
 }
