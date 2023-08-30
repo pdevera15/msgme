@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.Filter;
@@ -15,7 +16,7 @@ import jakarta.servlet.ServletResponse;
 
 @Component
 public class SecurityFilter implements Filter{
-
+    
     private final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
     
     @Override
